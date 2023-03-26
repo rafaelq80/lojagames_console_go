@@ -1,0 +1,5 @@
+﻿*.work
+*.mod
+*.sum
+temp*.*
+.vscode
