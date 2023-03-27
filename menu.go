@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"lojagames/model"
 	"os"
+	"strings"
+
 	"github.com/eiannone/keyboard"
 )
 
@@ -22,23 +24,7 @@ func main() {
 	var preco float64
 	var id, categoriaId int
 
-	c1 := model.Categoria{}
-	c1.SetCategoria(1, "Aventura")
-	c2 := model.Categoria{}
-	c2.SetCategoria(2, "E-Sports")
-	
-	listaCategorias = append(listaCategorias, c1)
-	listaCategorias = append(listaCategorias, c2)
-
-	/*c1 := model.Categoria{}
-	c1.SetCategoria(1, "Aventura")
-
-	c1.Visualizar()
-
-	p1 := model.Produto{}
-	p1.SetProduto(1, "Kena", "Microsoft", 1000.00, c1)
-
-	p1.Visualizar()*/
+	inicializaCategorias()
 
 	for {
 
@@ -83,7 +69,8 @@ func main() {
 			fmt.Println("Digite o preço do Produto: ")
 			fmt.Scanln(&preco)
 
-			fmt.Println("Informe a Categoria do Produto: ")
+			listarCategorias()
+			fmt.Println("Informe o Id da Categoria do Produto: ")
 			fmt.Scanln(&categoriaId)
 
 			categoria := consultarCategoriaPorId(listaCategorias, categoriaId)
@@ -127,6 +114,15 @@ func main() {
 		case 4:
 			fmt.Println("Consultar dados do produto - por Nome")
 			fmt.Println()
+
+			fmt.Println("Digite o nome do Produto: ")
+			nome,_ = reader.ReadString('\r')
+
+			filtroProdutos := consultarProdutosPorNome(listaProdutos, nome)
+
+			for _, produto := range *filtroProdutos {
+				produto.Visualizar()
+			}
 
 			keyPress()
 		case 5:
@@ -214,6 +210,18 @@ func consultarProdutosPorId(listaProdutos []model.Produto, id int) (*model.Produ
 	return nil
 }
 
+func consultarProdutosPorNome(listaProdutos []model.Produto, nome string) (*[]model.Produto) {
+	var filtroProdutos []model.Produto
+	
+	for _, produto := range listaProdutos {
+		if(strings.Contains(strings.TrimSpace(produto.GetNome()), strings.TrimSpace(nome))){
+			filtroProdutos = append(filtroProdutos, produto)			
+		}
+	}
+
+	return &filtroProdutos
+}
+
 func atualizarProduto(listaProdutos *[]model.Produto, produtoAtualizado model.Produto) {
 
 	for i, p := range *listaProdutos {
@@ -240,6 +248,27 @@ func deletarProduto(listaProdutos *[]model.Produto, id int) {
 func gerarId() (int){
 	codigoProduto ++
 	return codigoProduto
+}
+
+func inicializaCategorias(){
+
+	c1 := model.Categoria{}
+	c1.SetCategoria(1, "Aventura")
+	c2 := model.Categoria{}
+	c2.SetCategoria(2, "E-Sports")
+	
+	listaCategorias = append(listaCategorias, c1)
+	listaCategorias = append(listaCategorias, c2)
+
+}
+
+func listarCategorias(){
+
+	fmt.Println()
+	fmt.Println("Id - Descrição")
+	for _, categoria := range listaCategorias {
+		fmt.Println(categoria.GetId(), "-", categoria.GetDescricao())
+	}
 }
 
 func consultarCategoriaPorId(listaCategorias []model.Categoria, categoriaId int) (*model.Categoria){
